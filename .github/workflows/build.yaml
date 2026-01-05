@@ -24,6 +24,10 @@ jobs:
         id: commit
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
