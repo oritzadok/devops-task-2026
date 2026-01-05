@@ -1,5 +1,5 @@
 # IAM OIDC provider, used for IRSA
-resource "aws_iam_openid_connect_provider" "oidc_provider" {
+resource "aws_iam_openid_connect_provider" "eks" {
   url             = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
   client_id_list  = ["sts.amazonaws.com"]
 
@@ -12,9 +12,9 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 # For AWS Load Balancer Controller
 resource "aws_iam_role" "alb_controller" {
   name               = "${var.env_name}-alb-controller-role"
-  assume_role_policy = templatefile("files/oidc_role_assume_policy.json.tfpl", {
-    oidc_arn     = aws_iam_openid_connect_provider.oidc_provider.arn
-    oidc_url     = aws_iam_openid_connect_provider.oidc_provider.url
+  assume_role_policy = templatefile("files/eks_role_assume_policy.json.tfpl", {
+    oidc_arn     = aws_iam_openid_connect_provider.eks.arn
+    oidc_url     = aws_iam_openid_connect_provider.eks.url
     sa_namespace = "kube-system"
     sa_name      = "aws-load-balancer-controller"
   })
@@ -46,9 +46,9 @@ resource "aws_eks_addon" "metrics_server" {
 
 resource "aws_iam_role" "cloudwatch_observability" {
   name               = "${var.env_name}-cloudwatch-observability-role"
-  assume_role_policy = templatefile("files/oidc_role_assume_policy.json.tfpl", {
-    oidc_arn     = aws_iam_openid_connect_provider.oidc_provider.arn
-    oidc_url     = aws_iam_openid_connect_provider.oidc_provider.url
+  assume_role_policy = templatefile("files/eks_role_assume_policy.json.tfpl", {
+    oidc_arn     = aws_iam_openid_connect_provider.eks.arn
+    oidc_url     = aws_iam_openid_connect_provider.eks.url
     sa_namespace = "amazon-cloudwatch"
     sa_name      = "cloudwatch-agent"
   })

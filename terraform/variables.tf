@@ -13,3 +13,8 @@ variable "subnet_ids" {
   type        = list(string)
   description = "Subnets for EKS cluster worker nodes"
 }
+
+variable "gh_repo" {
+  type        = string
+  description = "Github repository for Github Actions CI/CD, in the form of org/repo"
+}
