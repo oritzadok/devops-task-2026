@@ -10,6 +10,7 @@ on:
 
 permissions:
   id-token: write  # For OIDC authentication, for requesting the JWT
+  contents: read
 
 jobs:
   build:

@@ -67,10 +67,10 @@ resource "github_actions_variable" "aws_region" {
 # Initially, when the created ECR repository is empty, need to build an image before deploying the application
 resource "null_resource" "run_first_build" {
   provisioner "local-exec" {
-    command = "./files/run_first_build.sh ${var.env_name}-repo ${var.gh_repo}"
+    command = "./files/run_first_build.sh ${aws_ecr_repository.ecr_repo.name} ${var.gh_repo}"
   }
 
   depends_on = [
-    aws_ecr_repository.ecr_repo
+    aws_iam_role.gh_actions
   ]
 }

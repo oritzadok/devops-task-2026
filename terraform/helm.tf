@@ -1,3 +1,8 @@
+# To determine VPC ID
+data "aws_subnet" "subnet1" {
+  id = var.subnet_ids[0]
+}
+
 # Ingress controller
 resource "helm_release" "aws_lb_controller" {
   name       = "aws-load-balancer-controller"
@@ -9,6 +14,10 @@ resource "helm_release" "aws_lb_controller" {
     {
       name  = "region"
       value = var.aws_region
+    },
+    {
+      name  = "vpcId"
+      value = data.aws_subnet.subnet1.vpc_id
     },
     {
       name  = "clusterName"
@@ -43,15 +52,7 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   create_namespace = true
 
-  # To expose Argo CD API server with an external IP
-  set = [
-    {
-      name  = "server.service.type"
-      value = "LoadBalancer"
-    }
-  ]
-
   depends_on = [
-    helm_release.aws_lb_controller
+    aws_eks_node_group.node_group
   ]
 }
