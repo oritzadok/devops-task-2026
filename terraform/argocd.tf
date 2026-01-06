@@ -1,3 +1,24 @@
+resource "helm_release" "argocd" {
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = "argocd"
+  create_namespace = true
+
+  # To expose Argo CD API server with an external IP
+  set = [
+    {
+      name  = "server.service.type"
+      value = "LoadBalancer"
+    }
+  ]
+
+  depends_on = [
+    aws_eks_node_group.node_group
+  ]
+}
+
+
 resource "kubernetes_manifest" "argocd_app" {
   manifest = {
     "apiVersion" = "argoproj.io/v1alpha1"
@@ -11,17 +32,26 @@ resource "kubernetes_manifest" "argocd_app" {
     }
     "spec" = {
       "project" = "default"
-      "source" = {
-        "repoURL"        = "https://github.com/${var.gh_repo}.git"
-        "targetRevision" = "HEAD"
-        "chart"          = "helm"
-        "helm"           = {
-          "releaseName" = "hello-app"
-          "valueFiles"  = [
-            "helm_values.yaml"
-          ]
+      "sources" = [
+        {
+          "repoURL"        = "https://github.com/${var.gh_repo}.git"
+          "targetRevision" = "HEAD"
+          "path"           = "helm"
+          "helm"           = {
+            "releaseName" = "hello-app"
+            "valueFiles"  = [
+              "$values/helm_values.yaml"
+            ]
+          }
+        },
+        # Second source is for the actual Helm values files to apply at installation.
+        # For simplicity it's same repository, but a better practice is store them in a separated GitOps repository
+        {
+          "repoURL"        = "https://github.com/${var.gh_repo}.git"
+          "targetRevision" = "HEAD"
+          "ref"            = "values"
         }
-      }
+      ]
       "destination" = {
         "server"    = "https://kubernetes.default.svc"
         "namespace" = "hello-app"
