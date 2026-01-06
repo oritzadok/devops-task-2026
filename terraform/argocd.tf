@@ -73,3 +73,12 @@ resource "kubernetes_manifest" "argocd_app" {
     null_resource.run_first_build
   ] 
 }
+
+
+# To get ALB address
+data "kubernetes_ingress_v1" "ingress" {
+  metadata {
+    name      = "hello-app"
+    namespace = "hello-app"
+  }
+}
