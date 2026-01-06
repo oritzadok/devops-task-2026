@@ -83,4 +83,8 @@ data "kubernetes_ingress_v1" "ingress" {
     name      = "hello-app"
     namespace = "hello-app"
   }
+
+  depends_on = [
+    kubernetes_manifest.argocd_app
+  ] 
 }
