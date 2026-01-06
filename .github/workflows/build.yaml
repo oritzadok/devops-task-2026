@@ -15,6 +15,8 @@ jobs:
   build:
     name: Build and Push
     runs-on: ubuntu-latest
+    env:
+      ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -35,11 +37,23 @@ jobs:
 
       - name: Build Docker image and push to Amazon ECR
         working-directory: ./app
-        env:
-          ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI }}
         run: |
           docker build \
             -t ${ECR_REPOSITORY_URI}:${IMAGE_TAG} \
             .
 
           docker push ${ECR_REPOSITORY_URI}:${IMAGE_TAG}
+          
+      - name: Set GitOps Helm values file
+        run: |
+          yq e \
+            '.image.repository = "${{ env.ECR_REPOSITORY_URI }}", .image.tag = "${{ env.IMAGE_TAG }}"' \
+            -i helm_values.yaml
+            
+      - name: Commit and push Helm values changes
+        uses: devops-infra/action-commit-push@v1.0.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_prefix: "[AUTO-COMMIT] "
+          commit_message: "Update GitOps Helm values file"
+          target_branch: "bla"

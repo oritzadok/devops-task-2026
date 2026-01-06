@@ -45,6 +45,8 @@ resource "kubernetes_manifest" "argocd_app" {
           }
         },
         # Second source is for the actual Helm values files to apply at installation.
+        # ( https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#values-files
+        # https://argo-cd.readthedocs.io/en/stable/user-guide/multiple_sources/#helm-value-files-from-external-git-repository )
         # For simplicity it's same repository, but a better practice is store them in a separated GitOps repository
         {
           "repoURL"        = "https://github.com/${var.gh_repo}.git"
