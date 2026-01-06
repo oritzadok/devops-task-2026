@@ -3,4 +3,5 @@
 
 image:
   repository: "412486290165.dkr.ecr.us-east-1.amazonaws.com/ori-repo"
-  tag: "fe4ceb8"
+
+  tag: "9942904"
