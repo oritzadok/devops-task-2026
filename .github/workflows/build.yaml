@@ -57,4 +57,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_prefix: "[AUTO-COMMIT] "
           commit_message: "Update GitOps Helm values file"
-          target_branch: "bla"
