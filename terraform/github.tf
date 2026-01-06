@@ -1,3 +1,14 @@
+resource "aws_ecr_repository" "ecr_repo" {
+  name                 = "${var.env_name}-repo"
+  image_tag_mutability = "MUTABLE"  # default
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  force_delete = true
+}
+
 # For Github Actions access
 resource "aws_iam_openid_connect_provider" "gh_actions" {
   url             = "https://token.actions.githubusercontent.com"
