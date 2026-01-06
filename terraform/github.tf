@@ -40,8 +40,10 @@ resource "aws_iam_role" "gh_actions" {
 }
 
 
-# TODO: attach policies to the role
-# TODO: add policy attachement to the depends on
+resource "aws_iam_role_policy_attachment" "gh_role" {
+  policy_arn = "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds"
+  role       = aws_iam_role.gh_actions.name
+}
 
 
 locals {
@@ -77,6 +79,6 @@ resource "null_resource" "run_first_build" {
   }
 
   depends_on = [
-    aws_iam_role.gh_actions
+    aws_iam_role_policy_attachment.gh_role
   ]
 }
