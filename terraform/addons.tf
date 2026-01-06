@@ -9,30 +9,6 @@ resource "aws_iam_openid_connect_provider" "eks" {
 }
 
 
-# For AWS Load Balancer Controller
-resource "aws_iam_role" "alb_controller" {
-  name               = "${var.env_name}-alb-controller-role"
-  assume_role_policy = templatefile("files/eks_role_assume_policy.json.tfpl", {
-    oidc_arn     = aws_iam_openid_connect_provider.eks.arn
-    oidc_url     = aws_iam_openid_connect_provider.eks.url
-    sa_namespace = "kube-system"
-    sa_name      = "aws-load-balancer-controller"
-  })
-}
-
-
-resource "aws_iam_policy" "alb_controller" {
-  name   = "AWSLoadBalancerControllerIAMPolicy"
-  policy = file("files/alb_controller_iam_policy.json")
-}
-
-
-resource "aws_iam_role_policy_attachment" "alb_controller" {
-  policy_arn = aws_iam_policy.alb_controller.arn
-  role       = aws_iam_role.alb_controller.name
-}
-
-
 resource "aws_eks_addon" "metrics_server" {
   cluster_name  = aws_eks_cluster.cluster.name
   addon_name    = "metrics-server"
@@ -75,10 +51,35 @@ resource "aws_eks_addon" "cloudwatch_observability" {
 }
 
 
+# For AWS Load Balancer Controller
+resource "aws_iam_role" "alb_controller" {
+  name               = "${var.env_name}-alb-controller-role"
+  assume_role_policy = templatefile("files/eks_role_assume_policy.json.tfpl", {
+    oidc_arn     = aws_iam_openid_connect_provider.eks.arn
+    oidc_url     = aws_iam_openid_connect_provider.eks.url
+    sa_namespace = "kube-system"
+    sa_name      = "aws-load-balancer-controller"
+  })
+}
+
+
+resource "aws_iam_policy" "alb_controller" {
+  name   = "AWSLoadBalancerControllerIAMPolicy"
+  policy = file("files/alb_controller_iam_policy.json")
+}
+
+
+resource "aws_iam_role_policy_attachment" "alb_controller" {
+  policy_arn = aws_iam_policy.alb_controller.arn
+  role       = aws_iam_role.alb_controller.name
+}
+
+
 # To determine VPC ID
 data "aws_subnet" "subnet1" {
   id = var.subnet_ids[0]
 }
+
 
 # Ingress controller
 resource "helm_release" "aws_lb_controller" {
