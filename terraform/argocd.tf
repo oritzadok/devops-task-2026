@@ -77,14 +77,14 @@ resource "kubernetes_manifest" "argocd_app" {
 }
 
 
-# To get ALB address
-data "kubernetes_ingress_v1" "ingress" {
-  metadata {
-    name      = "hello-app"
-    namespace = "hello-app"
-  }
-
-  depends_on = [
-    kubernetes_manifest.argocd_app
-  ] 
-}
+## To get ALB address
+#data "kubernetes_ingress_v1" "ingress" {
+#  metadata {
+#    name      = "hello-app"
+#    namespace = "hello-app"
+#  }
+#
+#  depends_on = [
+#    kubernetes_manifest.argocd_app
+#  ] 
+#}
