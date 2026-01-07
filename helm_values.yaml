@@ -2,5 +2,5 @@
 # Better practice - store this file in a separated GitOps repository
 # 
 image:
-  repository: ""
-  tag: ""
+  repository: "412486290165.dkr.ecr.us-east-1.amazonaws.com/ori-repo"
+  tag: "9bcb33e"
