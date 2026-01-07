@@ -26,9 +26,9 @@ resource "kubernetes_manifest" "argocd_app" {
     "metadata" = {
       "name"      = "hello-app"
       "namespace" = "argocd"
-      "finalizers" = [
-        "resources-finalizer.argocd.argoproj.io"  # To delete k8s resources upon application deletion
-      ]
+      #"finalizers" = [
+      #  "resources-finalizer.argocd.argoproj.io"  # To delete k8s resources upon application deletion
+      #]
     }
     "spec" = {
       "project" = "default"
